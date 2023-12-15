@@ -1,0 +1,24 @@
+<!-- Footer -->
+
+ <footer style="background-color:#fff;" class="border-top mt-2">
+          <div class="container px-4 px-lg-5">
+              <div class="row gx-4 gx-lg-5 justify-content-center">
+                  <div class="col-md-10 col-lg-8 col-xl-7">
+                      {% if current_user.name %}
+                        <div class="small text-center text-muted">You are logged in as <a href="{{url_for('user')}}">{{current_user.name}}</a></div>
+                      {% endif %}
+                      <div class="small text-center text-muted fst-italic">Copyright &copy; The Birthday Wisher <span id="currentYear"></span></div>
+                  </div>
+              </div>
+          </div>
+ </footer>
+
+<!--Scripts-->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+</body>
+</html>

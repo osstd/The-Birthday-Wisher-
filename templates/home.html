@@ -1,0 +1,34 @@
+{% block content %}
+{% include "header.html" %}
+
+<!-- Masthead -->
+
+<header class="masthead"
+style="background-image: url('../static/assets/img/bg1.jpg')"
+>
+    <div class="container">
+        {% if results: %}
+        <a class="head" href="{{url_for('index')}}"><h1 class="display-4">Birthdays List</h1></a>
+        {% else: %}
+        <h1 class="text-center display-4">Birthdays </h1>
+        {% endif %}
+    </div>
+</header>
+
+<!-- Body Content -->
+
+<div class="container mt-2">
+    <div class="card-container">
+
+    <img class="card-photo" src="{{url_for('static', filename='assets/img/card.jpg')}}" alt="Photo">
+
+    <div class="card-text">
+        <p>Never miss a birthday again!</p>
+    </div>
+</div>
+</div>
+
+
+
+{% include 'footer.html' %}
+{% endblock %}
