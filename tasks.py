@@ -19,7 +19,7 @@ def send_email_task():
         records = db.session.execute(db.select(Birthdays))
         birthdays = records.scalars().all()
         for birthday in birthdays:
-            if birthday.date == datetime.today().strftime('%Y-%m-%d'):
+            if (birthday.date.split('-')[1] + '-' + birthday.date.split('-')[2]) == datetime.today().strftime('%m-%d'):
                 recipient_name = birthday.name
                 recipient_email = birthday.email
                 wisher_name = birthday.author.name
