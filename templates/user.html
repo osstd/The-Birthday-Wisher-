@@ -1,10 +1,7 @@
 {% from "bootstrap5/form.html" import render_form %}
-
 {% block content %}
-
 {% include "header.html" %}
 
-<!-- Page Header -->
 <header
         class="masthead"
         style="background-image: url('../static/assets/img/user.jpg')">
@@ -21,7 +18,7 @@
     </div>
 </header>
 
-<main class="mb-4">
+<main class="mb-2 mt-4">
     <div class="container">
         <div class="row">
             {% with messages = get_flashed_messages() %}
@@ -54,7 +51,7 @@
                         <table class="table text-center">
                             <thead>
                             <tr>
-                                    <!--    No table header                            -->
+                                <!--    No table header                            -->
                             </tr>
                             </thead>
                             <tbody>
