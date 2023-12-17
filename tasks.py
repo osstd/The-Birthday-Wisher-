@@ -37,7 +37,7 @@ def send_email_task():
                     connection.sendmail(from_addr=email,
                                         to_addrs=wisher_email,
                                         msg=f"Subject: Birthday Wish Sent.\n\nHey {wisher_name},\nA birthday wish "
-                                            f"message has been sent to your friend: {recipient_name}, @email: {recipient_email}\nThe"
-                                            f"Birthday Wisher.")
+                                            f"has been sent to your friend: {recipient_name}, @ {recipient_email}\nThe"
+                                            f" Birthday Wisher.")
                     connection.close()
                 print('Messages Sent!')
