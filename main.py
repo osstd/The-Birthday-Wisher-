@@ -35,7 +35,6 @@ def load_user(user_id):
     return db.get_or_404(User, user_id)
 
 
-# CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URI", "sqlite:///birthdays.db")
 db = SQLAlchemy()
 db.init_app(app)
@@ -47,7 +46,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
-    birthdays = relationship("Birthdays", back_populates="author")
+    birthdays = relationship("Birthdays", back_populates="author", cascade="all, delete-orphan")
 
 
 class Birthdays(db.Model):
@@ -119,7 +118,6 @@ def login():
             flash('Password incorrect, please try again.')
             return redirect(url_for('login'))
         else:
-            # user is logged in
             login_user(user)
             return redirect(url_for('index'))
     return render_template("login.html", form=form, logged_in=current_user.is_authenticated)
@@ -184,9 +182,10 @@ def delete_birthday(birthday_id):
 @admin_only
 @login_required
 def delete_user(user_id):
-    user_to_delete = db.get_or_404(User, user_id)
-    db.session.delete(user_to_delete)
-    db.session.commit()
+    user_to_delete = db.session.get(User, user_id)
+    if user_to_delete:
+        db.session.delete(user_to_delete)
+        db.session.commit()
     return redirect(url_for('user'))
 
 
