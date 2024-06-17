@@ -1,4 +1,4 @@
-# Flask Birthday Reminder App
+# Birthday Reminder App
 
 This is a Flask application for managing and reminding users of birthdays. The app allows users to register, log in, add, edit, and delete birthday entries. There is also an admin-only section for managing users.
 
@@ -17,6 +17,7 @@ This is a Flask application for managing and reminding users of birthdays. The a
 
 - **Programming Language:** Python
 - **Frameworks:** Flask
+- **Database:** SQLAlchemy local PostgreSQL deployed
 - **Task Queue:** Celery
 - **Message Broker:** Redis
 - **Packages:** FlaskForm, wtforms, twilio
