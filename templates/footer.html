@@ -5,7 +5,7 @@
               <div class="row gx-4 gx-lg-5 justify-content-center">
                   <div class="col-md-10 col-lg-8 col-xl-7">
                       {% if current_user.name %}
-                        <div class="small text-center text-muted">You are logged in as <a href="{{url_for('user')}}">{{current_user.name}}</a></div>
+                        <div class="small text-center text-muted">You are logged in as <a href="{{url_for('main.user')}}">{{current_user.name}}</a></div>
                       {% endif %}
                       <div class="small text-center text-muted fst-italic">Copyright &copy; The Birthday Wisher <span id="currentYear"></span></div>
                   </div>

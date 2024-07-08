@@ -2,9 +2,12 @@ import random
 import smtplib
 from datetime import datetime
 from celery import Celery
-from main import app, db, Birthdays
+from app import app
+from extensions import db
+from models.models import Birthdays
 from twilio.rest import Client
 import os
+
 celery = Celery('tasks', broker=os.environ.get('R_KEY'))
 
 messages = ["Happy Birthday!\nAll the best for the year!\n", "Happy birthday! Have a wonderful time today and eat "

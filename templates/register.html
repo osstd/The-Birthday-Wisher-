@@ -1,6 +1,6 @@
 {% from "bootstrap5/form.html" import render_form %}
 {% block content %}
-{%include "header.html" %}
+{% include "header.html" %}
 
 
 <header
@@ -21,7 +21,21 @@
 
 <main class="mb-2 mt-4">
     <div class="container">
+
         <div class="row">
+
+            <div class="col-lg-8 col-md-10 mx-auto mb-2">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert {% if category == 'error' %} alert-danger {% elif category == 'success' %} alert-success {% endif %}">
+                    {{message}}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+
             <div class="col-lg-6 col-md-10 mx-auto">
                 {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
             </div>

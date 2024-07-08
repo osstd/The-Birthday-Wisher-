@@ -10,7 +10,7 @@
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
                 <div class="page-heading">
-                    <h1>{{user.name}}</h1>
+                    <h1>{{current_user.name}}</h1>
                     <span class="subheading">Your birthdays record</span>
                 </div>
             </div>
@@ -21,23 +21,27 @@
 <main class="mb-2 mt-4">
     <div class="container">
         <div class="row">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            <p class="flashes">
-                <strong>Error: {{ message}}</strong>
-            </p>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
 
-            {% if user.id == 1 %}
+            <div class="col-lg-8 col-md-10 mx-auto">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert {% if category == 'error' %} alert-danger {% elif category == 'success' %} alert-success {% endif %}">
+                    {{message}}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% if current_user.id == 1 %}
 
             <h2 style="margin-top: 15px; margin-bottom:15px">Users</h2>
             <ul>
                 {% for user in all_users %}
                 {% if user.id != 1: %}
-                <li> {{ user.name }} <a href="{{url_for('delete_user', user_id=user.id) }}">, to delete user: ✘</a></li>
+                <li> {{ user.name }} <a href="{{url_for('main.delete_user', user_id=user.id) }}">, to delete user: ✘</a>
+                </li>
                 {% endif %}
                 {% endfor %}
             </ul>
@@ -55,19 +59,21 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% if user.birthdays: %}
-                            {% for birthday in user.birthdays %}
+                            {% if current_user.birthdays: %}
+                            {% for birthday in current_user.birthdays %}
                             <tr>
                                 <td>{{ birthday.name|striptags }}</td>
                                 <td><a type="button" class="btn btn-warning"
-                                       href="{{url_for('edit_birthday', birthday_id=birthday.id)}}">Edit</a></td>
+                                       href="{{url_for('birthdays.edit_birthday', birthday_id=birthday.id)}}">Edit</a>
+                                </td>
                                 <td><a type="button" class="btn btn-danger"
-                                       href="{{url_for('delete_birthday', birthday_id=birthday.id) }}">Delete</a></td>
+                                       href="{{url_for('birthdays.delete_birthday', birthday_id=birthday.id) }}">Delete</a>
+                                </td>
                             </tr>
                             {% endfor %}
                             {% else: %}
                             <tr>
-                                <td><span>You have not added any birthdays yet. <a href="{{url_for('add')}}">Click to add</a></span>
+                                <td><span>You have not added any birthdays yet. <a href="{{url_for('birthdays.save')}}">Click to add</a></span>
                                 </td>
                             </tr>
                             {% endif %}

@@ -14,10 +14,3 @@ class LoginForm(FlaskForm):
     email = StringField("User Email", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Let Me In!")
-
-
-class EditBirthdayForm(FlaskForm):
-    name = StringField("User Name", validators=[DataRequired()])
-    date = StringField("YYYY-MM-DD", validators=[DataRequired()])
-    email = StringField("Recipient's Email", validators=[DataRequired()])
-    submit = SubmitField("Submit")
