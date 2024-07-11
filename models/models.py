@@ -1,4 +1,5 @@
 from flask_login import UserMixin
+from sqlalchemy import Date
 from sqlalchemy.orm import relationship
 from extensions import db
 
@@ -20,5 +21,5 @@ class Birthdays(db.Model):
     # Create reference to the User object, the "birthday" refers to the birthdays property in the User class.
     author = relationship("User", back_populates="birthdays")
     name = db.Column(db.String(1000), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
+    date = db.Column(Date, nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=False)

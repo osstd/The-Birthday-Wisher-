@@ -5,7 +5,9 @@ from main.forms import EditBirthdayForm
 from models.transactions import get_by_birthday_id, birthday_record_exists, add, put, delete, DatabaseError, \
     IntegrityError
 from extensions import limiter
-from utils import sanitize_input, validate_email
+from utils import sanitize_input, validate_email, validate_date
+from datetime import datetime
+
 
 birthdays_bp = Blueprint('birthdays', __name__)
 
@@ -23,19 +25,30 @@ def save():
             return redirect(url_for("auth.login"))
 
         email = request.form.get('email').lower().strip()
+        name = sanitize_input(request.form.get('name')),
+        date_str = request.form.get('date')
+
+        if not all([name, email, date_str]):
+            flash("Please fill all required fields", 'error')
+            return redirect(url_for("birthdays.save"))
+
+        is_valid_date, date_message = validate_date(date_str)
+        if not is_valid_date:
+            flash(date_message, 'error')
+            return redirect(url_for('birthdays.save'))
 
         if not validate_email(email):
             flash('Invalid email format.', "error")
             return redirect(url_for("birthdays.save"))
 
-        new_birthday = Birthdays(
-            author=current_user,
-            name=sanitize_input(request.form.get('name')),
-            date=request.form.get('date'),
-            email=email
-        )
-
         try:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+            new_birthday = Birthdays(
+                author=current_user,
+                name=name,
+                date=date_obj,
+                email=email
+            )
             add(new_birthday)
             flash("Birthday record submitted successfully.", "success")
 
@@ -71,8 +84,12 @@ def edit_birthday(birthday_id):
 
         if form.submit.data and form.validate_on_submit():
 
-            email = form.email.data.lower().strip()
+            is_valid_date, date_message = validate_date(str(form.date.data))
+            if not is_valid_date:
+                flash(date_message, 'error')
+                return redirect(url_for("birthdays.edit_birthday", birthday_id=birthday_id))
 
+            email = form.email.data.lower().strip()
             if not validate_email(email):
                 flash('Invalid email format.', "error")
                 return redirect(url_for("birthdays.edit_birthday", birthday_id=birthday_id))
@@ -94,7 +111,7 @@ def edit_birthday(birthday_id):
     return redirect(url_for("birthdays.edit_birthday", birthday_id=birthday_id))
 
 
-@birthdays_bp.route("/delete/<int:birthday_id>")
+@birthdays_bp.route("/delete/<int:birthday_id>", methods=["POST"])
 @login_required
 def delete_birthday(birthday_id):
     try:

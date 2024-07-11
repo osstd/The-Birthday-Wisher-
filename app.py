@@ -1,6 +1,6 @@
 from flask import Flask
 from config import Config
-from extensions import db, login_manager, bootstrap, csrf, limiter
+from extensions import db, migrate, login_manager, bootstrap, csrf, limiter
 from auth.routes import auth_bp
 from main.routes import main_bp
 from main.birthdayroutes import birthdays_bp
@@ -27,6 +27,7 @@ def load_user(user_id):
 
 def register_extensions(flask_app):
     db.init_app(flask_app)
+    migrate.init_app(flask_app, db)
     login_manager.init_app(flask_app)
     bootstrap.init_app(flask_app)
     csrf.init_app(flask_app)

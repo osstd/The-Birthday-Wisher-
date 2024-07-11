@@ -75,8 +75,13 @@
                                 <td><a type="button" class="btn btn-warning btn-sm"
                                        href="{{url_for('birthdays.edit_birthday', birthday_id=birthday.id)}}">Edit</a>
                                 </td>
-                                <td><a type="button" class="btn btn-danger btn-sm"
-                                       href="{{url_for('birthdays.delete_birthday', birthday_id=birthday.id) }}">Delete</a>
+                                <td>
+                                    <form method="POST" action="{{url_for('birthdays.delete_birthday', birthday_id=birthday.id) }}"
+                                          class="delete-form my-1"
+                                          data-user-name="{{ birthday.name }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -104,6 +109,7 @@
         }
     }
 });
+
 
 </script>
 
