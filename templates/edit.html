@@ -39,12 +39,28 @@
             </div>
 
             <div class="col-lg-8 col-md-10 mx-auto">
-                {{render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+                {{render_form(form, novalidate=True, button_map={"submit": "primary"}, id="myForm") }}
             </div>
 
         </div>
     </div>
 </main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('myForm');
+    form.addEventListener('submit', function(event) {
+        var confirmMessage = 'Are you sure you want to proceed?';
+
+        if (form.action.includes('edit-birthday')) {
+            confirmMessage = 'Are you sure you want to update this birthday record?';
+        }
+        if (!confirm(confirmMessage)) {
+            event.preventDefault();
+        }
+    });
+});
+</script>
+
 
 {% include "footer.html" %}
 {% endblock %}

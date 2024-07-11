@@ -26,7 +26,7 @@ def user():
         return render_template('user.html', all_users=None)
 
 
-@main_bp.route("/delete-user/<int:user_id>")
+@main_bp.route("/delete-user/<int:user_id>", methods=["POST"])
 @admin_only
 @login_required
 def delete_user(user_id):

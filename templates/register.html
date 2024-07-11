@@ -39,9 +39,39 @@
             <div class="col-lg-6 col-md-10 mx-auto">
                 {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
             </div>
+
+            <div
+                    id="passwordRequirements"
+                    style="display: none"
+                    class="col-lg-6 col-md-10 mx-auto mt-3"
+            >
+                <span>Password Requirements:</span>
+                <ul>
+                    <li>At least 8 characters long</li>
+                    <li>Contains at least one uppercase letter</li>
+                    <li>Contains at least one lowercase letter</li>
+                    <li>Contains at least one digit</li>
+                    <li>Contains at least one special character</li>
+                </ul>
+            </div>
         </div>
     </div>
 </main>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let passwordField = document.getElementById("passwordField");
+    let passwordRequirements = document.getElementById("passwordRequirements");
+
+    passwordField.addEventListener("mouseover", function () {
+      passwordRequirements.style.display = "block";
+    });
+
+    passwordField.addEventListener("mouseout", function () {
+      passwordRequirements.style.display = "none";
+    });
+  });
+
+</script>
 
 {% include "footer.html" %}
 {% endblock %}

@@ -40,8 +40,17 @@
             <ul>
                 {% for user in all_users %}
                 {% if user.id != 1: %}
-                <li> {{ user.name }} <a href="{{url_for('main.delete_user', user_id=user.id) }}">, to delete user: ✘</a>
+
+                <li>
+                    {{user.name}}
+                    <form method="POST" action="{{ url_for('main.delete_user', user_id=user.id) }}"
+                          class="delete-form my-1"
+                          data-user-name="{{ user.name }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
                 </li>
+
                 {% endif %}
                 {% endfor %}
             </ul>
@@ -63,10 +72,10 @@
                             {% for birthday in current_user.birthdays %}
                             <tr>
                                 <td>{{ birthday.name|striptags }}</td>
-                                <td><a type="button" class="btn btn-warning"
+                                <td><a type="button" class="btn btn-warning btn-sm"
                                        href="{{url_for('birthdays.edit_birthday', birthday_id=birthday.id)}}">Edit</a>
                                 </td>
-                                <td><a type="button" class="btn btn-danger"
+                                <td><a type="button" class="btn btn-danger btn-sm"
                                        href="{{url_for('birthdays.delete_birthday', birthday_id=birthday.id) }}">Delete</a>
                                 </td>
                             </tr>
@@ -85,5 +94,17 @@
         </div>
     </div>
 </main>
+<script>
+    document.addEventListener('submit', function(event) {
+    if (event.target.classList.contains('delete-form')) {
+        event.preventDefault();
+        var userName = event.target.getAttribute('data-user-name');
+        if (confirm(`Are you sure you want to delete ${userName}?`)) {
+            event.target.submit();
+        }
+    }
+});
+
+</script>
 
 {% include "footer.html" %} {% endblock %}

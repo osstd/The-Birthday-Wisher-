@@ -8,3 +8,4 @@ class EditBirthdayForm(FlaskForm):
     date = StringField("YYYY-MM-DD", validators=[DataRequired()])
     email = StringField("Recipient's Email", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
