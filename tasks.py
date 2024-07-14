@@ -5,8 +5,12 @@ from sqlalchemy import extract
 from models.models import Birthdays
 from utils import get_birthday_message, send_email_async, send_text
 from email.mime.text import MIMEText
+import logging
 import os
 import asyncio
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 celery = Celery('tasks', broker=os.environ.get('R_KEY'))
 
@@ -14,7 +18,7 @@ celery = Celery('tasks', broker=os.environ.get('R_KEY'))
 @celery.task
 def send_email_task():
     with app.app_context():
-        print('Will start checking for birthdays')
+        logger.info('Will start checking for birthdays')
 
         today = date.today()
         birthdays = Birthdays.query.filter(
@@ -26,42 +30,34 @@ def send_email_task():
             try:
                 send_birthday_email(birthday)
                 send_notification_email(birthday)
-                print('Messages Sent!')
+                logger.info('Messages Sent!')
 
             except Exception as e:
-                print(f"An error occurred: {e}")
+                logger.error(f"An error occurred: {e}")
                 try:
                     message = f"Troubleshoot The Birthday Wisher.\nThe error message:\n{e}"
                     asyncio.run(send_text(message))
 
                 except Exception as e:
-                    print(f"Error sending text message: {e}")
+                    logger.error(f"Error sending text message: {e}")
 
 
 def send_birthday_email(birthday):
-    recipient_name = birthday.name
-    recipient_email = birthday.email
-    wisher_name = birthday.author.name
-
     message = get_birthday_message()
 
     subject = "Happy Birthday!"
-    body = f"Hey {recipient_name},\n{message}{wisher_name}."
+    body = f"Hey {birthday.name},\n{message}{birthday.author.name}."
     msg = MIMEText(body, 'plain', 'utf-8')
     msg['Subject'] = subject
 
-    asyncio.run(send_email_async(message=msg, recepient_email=recipient_email))
+    asyncio.run(send_email_async(message=msg, recepient_email=birthday.email))
 
 
 def send_notification_email(birthday):
-    wisher_email = birthday.author.email
-    recipient_name = birthday.name
-    recipient_email = birthday.email
-
     subject = "Birthday Wish Sent."
-    body = f"A birthday wish has been sent to your friend: {recipient_name}, @ {recipient_email}\nThe Birthday Wisher."
+    body = f"Hey {birthday.author.name}, \nA birthday wish has been sent to your friend: {birthday.name}, @ {birthday.email}\nThe Birthday Wisher."
 
     msg = MIMEText(body, 'plain', 'utf-8')
     msg['Subject'] = subject
 
-    asyncio.run(send_email_async(message=msg, recepient_email=wisher_email))
+    asyncio.run(send_email_async(message=msg, recepient_email=birthday.author.email))
