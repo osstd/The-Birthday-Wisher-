@@ -1,5 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from extensions import db
+from models.models import User
 
 
 class DatabaseError(Exception):
@@ -21,17 +22,17 @@ def get_all(model, page=None, per_page=None):
 
 def get_user_by_id(model, user_id):
     try:
-        return db.session.query(model).get(user_id)
+        return db.session.get(model, user_id)
     except SQLAlchemyError as error:
         raise DatabaseError(f"Error retrieving user from {model.__tablename__}: {str(error)}")
 
 
-def get_user_by_email(model, email_id):
+def get_user_by_email(email_id):
     try:
-        return db.session.query(model).filter_by(email=email_id).first()
+        return User.query.filter_by(email=email_id).first()
     except SQLAlchemyError as error:
         raise DatabaseError(
-            f"Error retrieving user from {model.__tablename__}: {str(error)}")
+            f"Error retrieving user from {User.__tablename__}: {str(error)}")
 
 
 def get_by_birthday_id(model, birthday_id, user_id):

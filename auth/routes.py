@@ -11,7 +11,7 @@ auth_bp = Blueprint('auth', __name__)
 
 
 @auth_bp.route('/register', methods=["GET", "POST"])
-@limiter.limit("15 per hour")
+@limiter.limit("5 per hour")
 def register():
     form = RegisterForm()
 
@@ -45,6 +45,7 @@ def register():
 
 
 @auth_bp.route('/login', methods=["GET", "POST"])
+@limiter.limit("15 per hour")
 def login():
     form = LoginForm()
 
@@ -54,7 +55,7 @@ def login():
         password = form.password.data
 
         try:
-            user = get_user_by_email(User, email)
+            user = get_user_by_email(email)
 
             if not user:
                 flash("Email not found!", "error")

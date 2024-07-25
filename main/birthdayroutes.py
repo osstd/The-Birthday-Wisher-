@@ -2,12 +2,10 @@ from flask import Blueprint, render_template, url_for, flash, request, redirect
 from flask_login import current_user, login_required
 from models.models import Birthdays
 from main.forms import EditBirthdayForm
-from models.transactions import get_by_birthday_id, birthday_record_exists, add, put, delete, DatabaseError, \
-    IntegrityError
+from models.transactions import get_by_birthday_id, birthday_record_exists, add, put, delete, DatabaseError
 from extensions import limiter
 from utils import sanitize_input, validate_email, validate_date
 from datetime import datetime
-
 
 birthdays_bp = Blueprint('birthdays', __name__)
 
@@ -52,10 +50,6 @@ def save():
             add(new_birthday)
             flash("Birthday record submitted successfully.", "success")
 
-        except IntegrityError:
-            flash('Birthday record already exists.', 'error')
-            return redirect(url_for('auth.login'))
-
         except DatabaseError as e:
             flash(e.message, 'error')
 
@@ -87,12 +81,12 @@ def edit_birthday(birthday_id):
             is_valid_date, date_message = validate_date(str(form.date.data))
             if not is_valid_date:
                 flash(date_message, 'error')
-                return redirect(url_for("birthdays.edit_birthday", birthday_id=birthday_id))
+                return redirect(url_for('birthdays.edit_birthday', birthday_id=birthday_id))
 
             email = form.email.data.lower().strip()
             if not validate_email(email):
-                flash('Invalid email format.', "error")
-                return redirect(url_for("birthdays.edit_birthday", birthday_id=birthday_id))
+                flash('Invalid email format.', 'error')
+                return redirect(url_for('birthdays.edit_birthday', birthday_id=birthday_id))
 
             birthday.name = sanitize_input(form.name.data)
             birthday.date = form.date.data
@@ -107,28 +101,27 @@ def edit_birthday(birthday_id):
 
     except DatabaseError as e:
         flash(e.message, 'error')
+        return redirect(url_for('birthdays.edit_birthday', birthday_id=birthday_id))
 
-    return redirect(url_for("birthdays.edit_birthday", birthday_id=birthday_id))
 
-
-@birthdays_bp.route("/delete/<int:birthday_id>", methods=["POST"])
+@birthdays_bp.route('/delete/<int:birthday_id>', methods=['POST'])
 @login_required
 def delete_birthday(birthday_id):
     try:
         birthday_record = birthday_record_exists(Birthdays, birthday_id)
 
         if not birthday_record:
-            flash("Birthday record not found", "error")
-            return redirect(url_for("main.user"))
+            flash('Birthday record not found', 'error')
+            return redirect(url_for('main.user'))
 
         birthday = get_by_birthday_id(Birthdays, birthday_id, current_user.id)
 
         if not birthday:
-            flash("You are not allowed to delete this birthday record!", "error")
+            flash('You are not allowed to delete this birthday record!', 'error')
             return redirect(url_for("main.user"))
 
         delete(birthday)
-        flash("Birthday record deleted successfully", "success")
+        flash('Birthday record deleted successfully', 'success')
 
     except DatabaseError as e:
         flash(e.message, 'error')
