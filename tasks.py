@@ -3,7 +3,7 @@ from celery import Celery
 from app import app
 from sqlalchemy import extract
 from models.models import Birthdays
-from utils import get_birthday_message, send_email_async, send_text
+from utils import get_birthday_message, send_email_async, send_text, text_unsent
 from email.mime.text import MIMEText
 import logging
 import os
@@ -28,18 +28,38 @@ def send_email_task():
 
         for birthday in birthdays:
             try:
-                send_birthday_email(birthday)
-                send_notification_email(birthday)
-                logger.info('Messages Sent!')
+                birthday_email = send_birthday_email(birthday)
+                notification_email = send_notification_email(birthday)
+
+                if birthday_email and notification_email:
+                    logger.info('Messages Sent!')
+
+                if not birthday_email or not notification_email:
+                    logger.error('An error occurred, check logs!')
 
             except Exception as e:
                 logger.error(f"An error occurred: {e}")
                 try:
-                    message = f"Troubleshoot The Birthday Wisher.\nThe error message:\n{e}"
-                    asyncio.run(send_text(message))
+                    result = asyncio.run(send_text(f"Troubleshoot The Birthday Wisher.\nThe error message:\n{e}"))
+
+                    if not result['success']:
+                        text_unsent(
+                            MIMEText(
+                                f"An error occurred while sending a text notification:\n{result['error']}.\n Check logs"
+                                f".",
+                                'plain',
+                                'utf-8'))
+
+                    logger.info(f"Text message notification of error is sent: {e}")
 
                 except Exception as e:
-                    logger.error(f"Error sending text message: {e}")
+                    text_unsent(
+                        MIMEText(f"An error occurred while sending a text notification:\n{str(e)}.\n Check logs",
+                                 'plain',
+                                 'utf-8'))
+                    logger.error(f"Error sending text message to notify of error: {e}")
+
+                return
 
 
 def send_birthday_email(birthday):
@@ -50,14 +70,15 @@ def send_birthday_email(birthday):
     msg = MIMEText(body, 'plain', 'utf-8')
     msg['Subject'] = subject
 
-    asyncio.run(send_email_async(message=msg, recepient_email=birthday.email))
+    return asyncio.run(send_email_async(message=msg, recepient_email=birthday.email))
 
 
 def send_notification_email(birthday):
     subject = "Birthday Wish Sent."
-    body = f"Hey {birthday.author.name}, \nA birthday wish has been sent to your friend: {birthday.name}, @ {birthday.email}\nThe Birthday Wisher."
+    body = f"Hey {birthday.author.name}, \nA birthday wish has been sent to your friend: {birthday.name}, @ " \
+           f"{birthday.email}\nThe Birthday Wisher."
 
     msg = MIMEText(body, 'plain', 'utf-8')
     msg['Subject'] = subject
 
-    asyncio.run(send_email_async(message=msg, recepient_email=birthday.author.email))
+    return asyncio.run(send_email_async(message=msg, recepient_email=birthday.author.email))

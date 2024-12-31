@@ -1,5 +1,7 @@
 from flask import current_app
 from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
+import asyncio
 from datetime import date, datetime
 import aiosmtplib
 import html
@@ -60,11 +62,35 @@ async def send_email_async(message, recepient_email):
         return False
 
 
-async def send_text(message):
-    client = Client(current_app.config['TWILIO_ACCOUNT_SID'], current_app.config['TWILIO_AUTH_TOKEN'])
-    message = client.messages.create(
-        body=message,
-        from_=current_app.config['TWILIO_PHONE_NUMBER'],
-        to=current_app.config['RECIPIENT_PHONE_NUMBER']
-    )
-    print(message.status)
+async def send_text(message: str) -> dict:
+    try:
+        client = Client(
+            current_app.config['TWILIO_ACCOUNT_SID'],
+            current_app.config['TWILIO_AUTH_TOKEN']
+        )
+
+        response = client.messages.create(
+            body=message,
+            from_=current_app.config['TWILIO_PHONE_NUMBER'],
+            to=current_app.config['RECIPIENT_PHONE_NUMBER']
+        )
+        print(f"Message sent successfully. Status: {response.status}")
+        return {
+            'success': True,
+            'status': response.status,
+            'sid': response.sid
+        }
+
+    except TwilioRestException as e:
+        print(f"Failed to send message: {str(e)}")
+        return {
+            'success': False,
+            'error': str(e),
+            'code': e.code
+        }
+
+
+def text_unsent(msg):
+    msg['Subject'] = f"An error occurred while sending a text message"
+    asyncio.run(send_email_async(message=msg, recepient_email=current_app.config['EMAIL_DEFAULT']))
+    print('Text sending error, notified')

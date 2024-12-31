@@ -9,6 +9,7 @@ class Config:
     EMAIL_PORT = 587
     EMAIL_USERNAME = os.environ.get("E_ID")
     EMAIL_PASSWORD = os.environ.get("P_KEY")
+    EMAIL_DEFAULT = os.environ.get("E_D")
     DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
     TWILIO_ACCOUNT_SID = os.environ.get('A_ID')
     TWILIO_AUTH_TOKEN = os.environ.get('A_T')
